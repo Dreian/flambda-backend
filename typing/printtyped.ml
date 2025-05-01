@@ -675,17 +675,21 @@ and binding_op i ppf x =
 and function_param i ppf x =
   let p = x.fp_arg_label in
   arg_label i ppf p;
-  match x.fp_kind with
-  | Tparam_pat pat ->
-      line i ppf "Param_pat%a\n"
-        fmt_partiality x.fp_partial;
-      pattern (i+1) ppf pat
-  | Tparam_optional_default (pat, expr, sort) ->
-      line i ppf "Param_optional_default%a\n"
-        fmt_partiality x.fp_partial;
-      line i ppf "%a\n" Jkind.Sort.format sort;
-      pattern (i+1) ppf pat;
-      expression (i+1) ppf expr
+  (match x.fp_kind with
+   | Tparam_pat pat ->
+     line i ppf "Param_pat%a\n"
+       fmt_partiality x.fp_partial;
+     pattern (i+1) ppf pat
+   | Tparam_optional_default (pat, expr, sort) ->
+     line i ppf "Param_optional_default%a\n"
+       fmt_partiality x.fp_partial;
+     line i ppf "%a\n" Jkind.Sort.format sort;
+     pattern (i+1) ppf pat;
+     expression (i+1) ppf expr);
+  list (i+1) param_newtype ppf x.fp_newtypes
+
+and param_newtype i ppf (id, _, _, _) =
+  line i ppf "newtype %a\n" fmt_ident id
 
 and type_parameter i ppf (x, _variance) = core_type i ppf x
 
