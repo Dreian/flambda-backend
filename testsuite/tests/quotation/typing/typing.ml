@@ -320,6 +320,11 @@ let foo7' = (fun (type a) (type b) x -> <[fun (y : $a) -> y]>) 42;;
 val foo7' : <[$('_a) -> $('_a)]> expr = <[fun (y : _) -> y]>
 |}];;
 
+let foo7'' () = (fun (type a) (type b) x -> <[fun (y : $a) -> y]>) 42;;
+[%%expect {|
+val foo7'' : unit -> <[$('a) -> $('a)]> expr = <fun>
+|}];;
+
 let foo8 (type a) (type b) x = <[fun ((p, q) : $a * $b) -> ($x, (p, q))]> <["foo"]>;;
 [%%expect {|
 Line 1, characters 31-73:
@@ -479,6 +484,8 @@ Error: Type variable "'a" is used outside any quotations,
        Hint: Consider using "<['a]>".
 |}];;
 
+(* Eta expansion of quotes/splices *)
+
 let eta (type a) (x : a expr) : a expr = <[ $x ]>
 [%%expect {|
 val eta : 'a expr -> 'a expr @ once = <fun>
@@ -490,21 +497,12 @@ val eta1 : <[$('a) expr -> $('a) expr @ once]> expr =
   <[fun (x : _ expr) -> (<[$x]> : _ expr)]>
 |}]
 
-module M1' : sig
-  val foo : <['a]> expr -> <['a -> int]> expr
-end = struct
-  let foo (x: 'a expr) = <[fun (y : $'a) -> 1]>;;
-end
-
-[%%expect{|
-module M1' : sig val foo : 'a expr -> <[$('a) -> int]> expr end
+let eta1' = <[ fun (type a) (x : a) : a -> $(<[ x ]>) ]>
+[%%expect {|
+val eta1' : <[$('a) -> $('a)]> expr = <[fun (type a) (x : a) -> (x : a)]>
 |}]
 
-module M1'' : sig
-  val foo : 'a expr -> <[$('a) -> int]> expr
-end = struct
-  let foo (x: <['a]> expr) = <[fun (y : 'a) -> 1]>;;
-end
+(* Applicative *)
 
 let app (type a b) (f : <[$a -> $b]> expr) (x : a expr) =
   <[ $f $x ]>
