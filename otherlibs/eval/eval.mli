@@ -28,7 +28,7 @@
 (* CR metaprogramming jrickard: This file has not been code reviewed *)
 
 (** Evaluate a quoted OCaml expression at runtime. *)
-val eval : 'a expr -> 'a eval
+val eval : 'a expr @ once -> 'a eval
 
 module type Jit_intf = sig
   val jit_load :
