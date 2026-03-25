@@ -626,3 +626,15 @@ Error: Signature mismatch:
          "<[int * string]> expr"
        Type "int" = "int" is not compatible with type "string"
 |}]
+
+(* Non-value-kinded expressions *)
+
+let x = <[ #42L ]>
+[%%expect {|
+val x : <[int64#]> expr = <[#42L]>
+|}]
+
+let x = <[ #("abc", #42L) ]>
+[%%expect {|
+val x : <[#(string * int64#)]> expr = <[#("abc", #42L)]>
+|}]
