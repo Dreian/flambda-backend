@@ -3804,10 +3804,6 @@ let rec mcomp type_pairs env t1 t2 =
         | (Tunivar {jkind=jkind1}, Tunivar {jkind=jkind2}, _, _) ->
             (try unify_univar env t1' t2' jkind1 jkind2 !univar_pairs
              with Cannot_unify_universal_variables -> raise Incompatible)
-        | (Tquote t1, Tquote t2, _, _) ->
-            mcomp type_pairs env t1 t2
-        | (Tsplice t1, Tsplice t2, _, _) ->
-            mcomp type_pairs env t1 t2
         | (Tsplice t1, _, _, _) ->
             mcomp type_pairs env t1 t2'
         | (_, Tsplice t2, _, _) ->
@@ -4423,13 +4419,13 @@ and unify3 uenv t1 t1' t2 t2' =
       unify uenv t1 t2
   | (Tquote_eval t1, Tquote_eval t2) ->
       unify uenv t1 t2
-  | (Tsplice s1, _) when is_flexible_ty s1 ->
+  | (Tsplice s1, _) when is_flexible s1 ->
       unify uenv s1 (new_quote_ty t2')
-  | (Tquote s1, _) when is_flexible_ty s1 ->
+  | (Tquote s1, _) when is_flexible s1 ->
       unify uenv s1 (new_splice_ty t2')
-  | (_, Tsplice s2) when is_flexible_ty s2 ->
+  | (_, Tsplice s2) when is_flexible s2 ->
       unify uenv (new_quote_ty t1') s2
-  | (_, Tquote s2) when is_flexible_ty s2 ->
+  | (_, Tquote s2) when is_flexible s2 ->
       unify uenv (new_splice_ty t1') s2
   | (Tfield _, Tfield _) -> (* special case for GADTs *)
       unify_fields uenv t1' t2'
